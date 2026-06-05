@@ -1,0 +1,277 @@
+<%- include('partials/header') %>
+
+<div class="app-layout">
+  <%- include('partials/navbar', { currentPage: 'employees' }) %>
+
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="page-breadcrumb">
+          <a href="/dashboard" class="breadcrumb-home"><i class="bi bi-house-fill"></i></a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="/employees" class="breadcrumb-link">Employees</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current"><%= employee.name %></span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="/employees" class="btn btn-outline-secondary-custom btn-sm">
+          <i class="bi bi-arrow-left me-1"></i>Back to List
+        </a>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Employee Profile</h1>
+          <p class="page-subtitle">
+            <span class="badge bg-primary-soft text-primary me-2">
+              <i class="bi bi-hash me-1"></i><%= employee.employeeId %>
+            </span>
+            Added on <%= new Date(employee.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+          </p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+
+        <!-- Profile Card -->
+        <div class="col-lg-4">
+          <div class="content-card profile-card">
+            <div class="profile-photo-wrap">
+              <% if (employee.photoUrl) { %>
+                <img
+                  src="<%= employee.photoUrl %>"
+                  alt="<%= employee.name %>"
+                  class="profile-photo"
+                  id="profilePhoto">
+              <% } else { %>
+                <div class="profile-photo-initials">
+                  <%= employee.name.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase() %>
+                </div>
+              <% } %>
+              <div class="profile-status-badge">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                <span>Active</span>
+              </div>
+            </div>
+            <div class="profile-card-body">
+              <h2 class="profile-name"><%= employee.name %></h2>
+              <div class="profile-dept">
+                <i class="bi bi-building-fill me-1"></i><%= employee.department %>
+              </div>
+              <div class="profile-id mt-2">
+                <code><%= employee.employeeId %></code>
+              </div>
+            </div>
+
+            <!-- S3 info badge -->
+            <% if (employee.photoUrl) { %>
+              <div class="s3-info-badge">
+                <i class="bi bi-cloud-check-fill me-1 text-info"></i>
+                <small>Photo stored in <strong>AWS S3</strong></small>
+              </div>
+            <% } %>
+
+            <!-- Delete Action -->
+            <div class="profile-card-footer">
+              <button
+                type="button"
+                class="btn btn-danger w-100"
+                onclick="confirmDelete('<%= employee._id %>', '<%= employee.name %>', '<%= employee.employeeId %>')">
+                <i class="bi bi-trash-fill me-2"></i>Delete Employee
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="col-lg-8">
+          <div class="content-card">
+            <div class="content-card-header">
+              <h5 class="content-card-title">
+                <i class="bi bi-person-lines-fill me-2 text-primary"></i>Employee Details
+              </h5>
+            </div>
+            <div class="content-card-body">
+              <div class="detail-grid">
+
+                <div class="detail-item">
+                  <div class="detail-label">
+                    <i class="bi bi-hash me-1"></i>Employee ID
+                  </div>
+                  <div class="detail-value">
+                    <code class="detail-code"><%= employee.employeeId %></code>
+                  </div>
+                </div>
+
+                <div class="detail-item">
+                  <div class="detail-label">
+                    <i class="bi bi-person-fill me-1"></i>Full Name
+                  </div>
+                  <div class="detail-value"><%= employee.name %></div>
+                </div>
+
+                <div class="detail-item">
+                  <div class="detail-label">
+                    <i class="bi bi-envelope-fill me-1"></i>Email Address
+                  </div>
+                  <div class="detail-value">
+                    <a href="mailto:<%= employee.email %>" class="text-link"><%= employee.email %></a>
+                  </div>
+                </div>
+
+                <div class="detail-item">
+                  <div class="detail-label">
+                    <i class="bi bi-telephone-fill me-1"></i>Phone Number
+                  </div>
+                  <div class="detail-value"><%= employee.phone %></div>
+                </div>
+
+                <div class="detail-item">
+                  <div class="detail-label">
+                    <i class="bi bi-building-fill me-1"></i>Department
+                  </div>
+                  <div class="detail-value">
+                    <span class="dept-badge"><%= employee.department %></span>
+                  </div>
+                </div>
+
+                <div class="detail-item salary-item">
+                  <div class="detail-label">
+                    <i class="bi bi-currency-dollar me-1"></i>Annual Salary
+                    <span class="kms-tag">
+                      <i class="bi bi-lock-fill me-1"></i>KMS Decrypted
+                    </span>
+                  </div>
+                  <div class="detail-value salary-value">
+                    $<%= parseFloat(salary).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) %>
+                    <span class="salary-usd">USD / year</span>
+                  </div>
+                </div>
+
+                <div class="detail-item">
+                  <div class="detail-label">
+                    <i class="bi bi-calendar3 me-1"></i>Date Added
+                  </div>
+                  <div class="detail-value">
+                    <%= new Date(employee.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- AWS Technical Details Card -->
+          <div class="content-card mt-4">
+            <div class="content-card-header">
+              <h5 class="content-card-title">
+                <i class="bi bi-cloud-fill me-2 text-info"></i>AWS Storage Details
+              </h5>
+            </div>
+            <div class="content-card-body">
+              <div class="aws-detail-grid">
+
+                <div class="aws-detail-item">
+                  <div class="aws-detail-icon aws-kms">
+                    <i class="bi bi-lock-fill"></i>
+                  </div>
+                  <div class="aws-detail-content">
+                    <div class="aws-detail-title">Salary Encryption</div>
+                    <div class="aws-detail-desc">
+                      Stored as AES-256 ciphertext in MongoDB.<br>
+                      <small class="text-muted">Decrypted on-demand using AWS KMS.</small>
+                    </div>
+                    <div class="aws-detail-tag">
+                      <i class="bi bi-check-circle-fill text-success me-1"></i>
+                      KMS Encrypted at Rest
+                    </div>
+                  </div>
+                </div>
+
+                <% if (employee.photoUrl) { %>
+                <div class="aws-detail-item">
+                  <div class="aws-detail-icon aws-s3">
+                    <i class="bi bi-cloud-fill"></i>
+                  </div>
+                  <div class="aws-detail-content">
+                    <div class="aws-detail-title">Profile Photo</div>
+                    <div class="aws-detail-desc">
+                      Stored in AWS S3 bucket.<br>
+                      <small class="text-muted text-break">
+                        <% if (employee.photoKey) { %>
+                          Key: <%= employee.photoKey %>
+                        <% } %>
+                      </small>
+                    </div>
+                    <div class="aws-detail-tag">
+                      <i class="bi bi-check-circle-fill text-success me-1"></i>
+                      Stored in S3
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-custom">
+      <div class="modal-header modal-header-danger">
+        <div class="modal-icon">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <h5 class="modal-title">Confirm Delete</h5>
+      </div>
+      <div class="modal-body">
+        <p>You are about to permanently delete:</p>
+        <div class="delete-employee-info">
+          <strong id="deleteEmployeeName"><%= employee.name %></strong>
+          <code id="deleteEmployeeId"><%= employee.employeeId %></code>
+        </div>
+        <p class="text-danger mt-3">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <strong>This cannot be undone.</strong> The record will be removed from MongoDB and the photo will be deleted from AWS S3.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteForm" method="POST" action="/employees/<%= employee._id %>/delete">
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash-fill me-1"></i>Delete Permanently
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+  function confirmDelete(id, name, employeeId) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+  }
+</script>
+</body>
+</html>

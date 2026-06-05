@@ -1,0 +1,238 @@
+<%- include('partials/header') %>
+
+<div class="app-layout">
+  <%- include('partials/navbar', { currentPage: 'dashboard' }) %>
+
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="page-breadcrumb">
+          <span class="breadcrumb-home"><i class="bi bi-house-fill"></i></span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Dashboard</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <i class="bi bi-circle-fill text-success me-1" style="font-size:0.5rem;"></i>
+          <span>AWS Connected</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+
+      <!-- Welcome Header -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Welcome back, <strong><%= user?.username || 'Admin' %></strong>. Here's your workforce overview.</p>
+        </div>
+        <div class="page-header-actions">
+          <a href="/employees/add" class="btn btn-primary-custom">
+            <i class="bi bi-person-plus-fill me-2"></i>Add Employee
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+
+        <div class="stat-card stat-card-blue">
+          <div class="stat-card-icon">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div class="stat-card-body">
+            <div class="stat-value"><%= totalEmployees %></div>
+            <div class="stat-label">Total Employees</div>
+          </div>
+          <div class="stat-card-footer">
+            <a href="/employees" class="stat-link">View all <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card-green">
+          <div class="stat-card-icon">
+            <i class="bi bi-key-fill"></i>
+          </div>
+          <div class="stat-card-body">
+            <div class="stat-value">Active</div>
+            <div class="stat-label">Secrets Manager</div>
+          </div>
+          <div class="stat-card-footer">
+            <span class="stat-status"><i class="bi bi-check-circle-fill me-1"></i>5 Secrets Loaded</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card-orange">
+          <div class="stat-card-icon">
+            <i class="bi bi-lock-fill"></i>
+          </div>
+          <div class="stat-card-body">
+            <div class="stat-value">Active</div>
+            <div class="stat-label">KMS Encryption</div>
+          </div>
+          <div class="stat-card-footer">
+            <span class="stat-status"><i class="bi bi-check-circle-fill me-1"></i>Salary Fields Encrypted</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card-purple">
+          <div class="stat-card-icon">
+            <i class="bi bi-cloud-fill"></i>
+          </div>
+          <div class="stat-card-body">
+            <div class="stat-value">Active</div>
+            <div class="stat-label">S3 Storage</div>
+          </div>
+          <div class="stat-card-footer">
+            <span class="stat-status"><i class="bi bi-check-circle-fill me-1"></i>Photo Storage Enabled</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Action Cards + Department Stats -->
+      <div class="row g-4 mt-1">
+
+        <!-- Quick Actions -->
+        <div class="col-lg-5">
+          <div class="content-card h-100">
+            <div class="content-card-header">
+              <h5 class="content-card-title">
+                <i class="bi bi-lightning-fill me-2 text-warning"></i>Quick Actions
+              </h5>
+            </div>
+            <div class="content-card-body">
+              <div class="quick-actions">
+                <a href="/employees/add" class="quick-action-btn quick-action-primary">
+                  <div class="quick-action-icon">
+                    <i class="bi bi-person-plus-fill"></i>
+                  </div>
+                  <div class="quick-action-content">
+                    <div class="quick-action-title">Add Employee</div>
+                    <div class="quick-action-desc">Register a new employee with KMS-encrypted salary and S3 photo upload</div>
+                  </div>
+                  <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
+
+                <a href="/employees" class="quick-action-btn quick-action-info">
+                  <div class="quick-action-icon">
+                    <i class="bi bi-people-fill"></i>
+                  </div>
+                  <div class="quick-action-content">
+                    <div class="quick-action-title">View Employees</div>
+                    <div class="quick-action-desc">Browse all employees, view profiles, and manage records</div>
+                  </div>
+                  <i class="bi bi-chevron-right quick-action-arrow"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Department Breakdown -->
+        <div class="col-lg-7">
+          <div class="content-card h-100">
+            <div class="content-card-header">
+              <h5 class="content-card-title">
+                <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Employees by Department
+              </h5>
+            </div>
+            <div class="content-card-body">
+              <% if (departmentStats && departmentStats.length > 0) { %>
+                <% departmentStats.forEach(function(dept) { %>
+                  <div class="dept-stat-row">
+                    <div class="dept-stat-name">
+                      <i class="bi bi-building me-2 text-muted"></i>
+                      <%= dept._id %>
+                    </div>
+                    <div class="dept-stat-bar-wrap">
+                      <div class="dept-stat-bar"
+                           style="width: <%= Math.round((dept.count / totalEmployees) * 100) %>%">
+                      </div>
+                    </div>
+                    <div class="dept-stat-count">
+                      <span class="badge bg-primary-soft text-primary"><%= dept.count %></span>
+                    </div>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <div class="empty-state-sm">
+                  <i class="bi bi-people"></i>
+                  <p>No employees yet. <a href="/employees/add">Add your first employee →</a></p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- AWS Architecture Info -->
+      <div class="content-card mt-4">
+        <div class="content-card-header">
+          <h5 class="content-card-title">
+            <i class="bi bi-diagram-3-fill me-2 text-info"></i>AWS Services Integration Status
+          </h5>
+        </div>
+        <div class="content-card-body">
+          <div class="aws-status-grid">
+            <div class="aws-status-item">
+              <div class="aws-status-icon aws-secrets">
+                <i class="bi bi-key-fill"></i>
+              </div>
+              <div class="aws-status-info">
+                <div class="aws-status-name">Secrets Manager</div>
+                <div class="aws-status-desc">MongoDB creds, Admin creds, JWT secret, SMTP creds, SSH key</div>
+              </div>
+              <span class="badge bg-success">Online</span>
+            </div>
+            <div class="aws-status-item">
+              <div class="aws-status-icon aws-kms">
+                <i class="bi bi-lock-fill"></i>
+              </div>
+              <div class="aws-status-info">
+                <div class="aws-status-name">AWS KMS</div>
+                <div class="aws-status-desc">Employee salary field encryption and decryption</div>
+              </div>
+              <span class="badge bg-success">Online</span>
+            </div>
+            <div class="aws-status-item">
+              <div class="aws-status-icon aws-s3">
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+              </div>
+              <div class="aws-status-info">
+                <div class="aws-status-name">AWS S3</div>
+                <div class="aws-status-desc">Employee profile photo storage and management</div>
+              </div>
+              <span class="badge bg-success">Online</span>
+            </div>
+            <div class="aws-status-item">
+              <div class="aws-status-icon aws-jwt">
+                <i class="bi bi-shield-lock-fill"></i>
+              </div>
+              <div class="aws-status-info">
+                <div class="aws-status-name">JWT Auth</div>
+                <div class="aws-status-desc">HTTP-only cookie tokens, 8-hour expiry, all routes protected</div>
+              </div>
+              <span class="badge bg-success">Online</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!-- Sidebar Navigation -->
+<aside class="sidebar" id="sidebar">
+
+  <!-- Brand / Logo -->
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">
+      <i class="bi bi-shield-lock-fill"></i>
+    </div>
+    <div class="sidebar-brand-text">
+      <span class="brand-title">EMS</span>
+      <span class="brand-subtitle">AWS Powered</span>
+    </div>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">MAIN MENU</div>
+    <ul class="nav-list">
+      <li>
+        <a href="/dashboard"
+           class="nav-link-item <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'active' : '' %>">
+          <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+          <span class="nav-text">Dashboard</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-section-label">EMPLOYEES</div>
+    <ul class="nav-list">
+      <li>
+        <a href="/employees/add"
+           class="nav-link-item <%= (typeof currentPage !== 'undefined' && currentPage === 'add') ? 'active' : '' %>">
+          <span class="nav-icon"><i class="bi bi-person-plus-fill"></i></span>
+          <span class="nav-text">Add Employee</span>
+        </a>
+      </li>
+      <li>
+        <a href="/employees"
+           class="nav-link-item <%= (typeof currentPage !== 'undefined' && currentPage === 'employees') ? 'active' : '' %>">
+          <span class="nav-icon"><i class="bi bi-people-fill"></i></span>
+          <span class="nav-text">View Employees</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-section-label">AWS SERVICES</div>
+    <ul class="nav-list">
+      <li>
+        <div class="aws-badge">
+          <span class="aws-dot aws-dot-green"></span>
+          <span class="aws-label">Secrets Manager</span>
+        </div>
+      </li>
+      <li>
+        <div class="aws-badge">
+          <span class="aws-dot aws-dot-orange"></span>
+          <span class="aws-label">KMS Encryption</span>
+        </div>
+      </li>
+      <li>
+        <div class="aws-badge">
+          <span class="aws-dot aws-dot-blue"></span>
+          <span class="aws-label">S3 Storage</span>
+        </div>
+      </li>
+      <li>
+        <div class="aws-badge">
+          <span class="aws-dot aws-dot-purple"></span>
+          <span class="aws-label">JWT Auth</span>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer">
+    <div class="sidebar-user-card">
+      <div class="sidebar-avatar">
+        <i class="bi bi-person-fill"></i>
+      </div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-username"><%= typeof user !== 'undefined' && user ? user.username : 'Admin' %></div>
+        <div class="sidebar-role">Administrator</div>
+      </div>
+    </div>
+    <a href="/logout" class="logout-btn">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Logout</span>
+    </a>
+  </div>
+
+</aside>

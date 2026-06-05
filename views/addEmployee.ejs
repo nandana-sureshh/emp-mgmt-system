@@ -1,0 +1,301 @@
+<%- include('partials/header') %>
+
+<div class="app-layout">
+  <%- include('partials/navbar', { currentPage: 'add' }) %>
+
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="page-breadcrumb">
+          <a href="/dashboard" class="breadcrumb-home"><i class="bi bi-house-fill"></i></a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="/employees" class="breadcrumb-link">Employees</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Add Employee</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Add New Employee</h1>
+          <p class="page-subtitle">Fill in the details below. The salary will be encrypted using AWS KMS and the photo will be stored in AWS S3.</p>
+        </div>
+        <a href="/employees" class="btn btn-outline-secondary-custom">
+          <i class="bi bi-arrow-left me-2"></i>Back to List
+        </a>
+      </div>
+
+      <!-- Alerts -->
+      <% if (error) { %>
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+          <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+          <div><%= error %></div>
+          <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+      <% } %>
+      <% if (success) { %>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+          <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+          <div><%= success %></div>
+          <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+      <% } %>
+
+      <div class="row g-4">
+
+        <!-- Main Form -->
+        <div class="col-lg-8">
+          <div class="content-card">
+            <div class="content-card-header">
+              <h5 class="content-card-title">
+                <i class="bi bi-person-vcard-fill me-2 text-primary"></i>Employee Information
+              </h5>
+            </div>
+            <div class="content-card-body">
+              <form
+                action="/employees/add"
+                method="POST"
+                enctype="multipart/form-data"
+                id="addEmployeeForm"
+                novalidate>
+
+                <!-- Row 1: Employee ID + Full Name -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="employeeId" class="form-label-custom">
+                      Employee ID <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group-custom">
+                      <span class="input-icon"><i class="bi bi-hash"></i></span>
+                      <input
+                        type="text"
+                        class="form-control form-control-custom"
+                        id="employeeId"
+                        name="employeeId"
+                        placeholder="e.g. EMP001"
+                        required
+                        maxlength="20"
+                        style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-hint">Unique identifier (will be stored in uppercase)</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="name" class="form-label-custom">
+                      Full Name <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group-custom">
+                      <span class="input-icon"><i class="bi bi-person-fill"></i></span>
+                      <input
+                        type="text"
+                        class="form-control form-control-custom"
+                        id="name"
+                        name="name"
+                        placeholder="e.g. John Smith"
+                        required
+                        maxlength="100">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 2: Email + Phone -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="email" class="form-label-custom">
+                      Email Address <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group-custom">
+                      <span class="input-icon"><i class="bi bi-envelope-fill"></i></span>
+                      <input
+                        type="email"
+                        class="form-control form-control-custom"
+                        id="email"
+                        name="email"
+                        placeholder="john.smith@company.com"
+                        required>
+                    </div>
+                    <div class="form-hint">Welcome email will be sent to this address</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="phone" class="form-label-custom">
+                      Phone Number <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group-custom">
+                      <span class="input-icon"><i class="bi bi-telephone-fill"></i></span>
+                      <input
+                        type="tel"
+                        class="form-control form-control-custom"
+                        id="phone"
+                        name="phone"
+                        placeholder="+1 (555) 000-0000"
+                        required
+                        maxlength="20">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 3: Department + Salary -->
+                <div class="row g-3 mb-4">
+                  <div class="col-md-6">
+                    <label for="department" class="form-label-custom">
+                      Department <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group-custom">
+                      <span class="input-icon"><i class="bi bi-building-fill"></i></span>
+                      <select
+                        class="form-select form-control-custom"
+                        id="department"
+                        name="department"
+                        required>
+                        <option value="" disabled selected>Select department...</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Legal">Legal</option>
+                        <option value="IT">IT</option>
+                        <option value="Design">Design</option>
+                        <option value="Customer Support">Customer Support</option>
+                        <option value="Management">Management</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="salary" class="form-label-custom">
+                      Annual Salary (USD) <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group-custom">
+                      <span class="input-icon"><i class="bi bi-currency-dollar"></i></span>
+                      <input
+                        type="number"
+                        class="form-control form-control-custom"
+                        id="salary"
+                        name="salary"
+                        placeholder="75000"
+                        required
+                        min="0"
+                        step="1">
+                    </div>
+                    <div class="form-hint kms-hint">
+                      <i class="bi bi-lock-fill me-1 text-warning"></i>
+                      This value will be <strong>encrypted with AWS KMS</strong> before storage
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="d-flex gap-3">
+                  <button type="submit" class="btn btn-primary-custom" id="submitBtn">
+                    <span class="btn-text">
+                      <i class="bi bi-check-circle-fill me-2"></i>Save Employee
+                    </span>
+                    <span class="btn-loading d-none">
+                      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Processing...
+                    </span>
+                  </button>
+                  <a href="/employees" class="btn btn-outline-secondary-custom">
+                    Cancel
+                  </a>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Photo Upload + Info -->
+        <div class="col-lg-4">
+
+          <!-- Photo Upload Card -->
+          <div class="content-card mb-4">
+            <div class="content-card-header">
+              <h5 class="content-card-title">
+                <i class="bi bi-camera-fill me-2 text-primary"></i>Profile Photo
+              </h5>
+            </div>
+            <div class="content-card-body">
+              <div class="photo-upload-area" id="photoUploadArea">
+                <div class="photo-preview" id="photoPreviewContainer">
+                  <img id="photoPreview" src="" alt="Preview" class="d-none">
+                  <div id="photoPlaceholder">
+                    <i class="bi bi-person-circle"></i>
+                    <p>Click or drag to upload</p>
+                    <small>JPEG, PNG, WebP · Max 5MB</small>
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  id="photo"
+                  name="photo"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  class="photo-file-input"
+                  form="addEmployeeForm">
+              </div>
+              <div class="s3-hint mt-2">
+                <i class="bi bi-cloud-arrow-up-fill me-1 text-info"></i>
+                <small>Photo will be uploaded to <strong>AWS S3</strong></small>
+              </div>
+            </div>
+          </div>
+
+          <!-- AWS Services Info -->
+          <div class="content-card">
+            <div class="content-card-header">
+              <h5 class="content-card-title">
+                <i class="bi bi-info-circle-fill me-2 text-info"></i>What Happens on Save
+              </h5>
+            </div>
+            <div class="content-card-body p-0">
+              <div class="info-step">
+                <div class="info-step-num">1</div>
+                <div class="info-step-content">
+                  <div class="info-step-title">Photo → AWS S3</div>
+                  <div class="info-step-desc">Photo is uploaded to your S3 bucket. URL is saved in MongoDB.</div>
+                </div>
+              </div>
+              <div class="info-step">
+                <div class="info-step-num">2</div>
+                <div class="info-step-content">
+                  <div class="info-step-title">Salary → AWS KMS</div>
+                  <div class="info-step-desc">Salary is encrypted using your KMS key. Ciphertext is stored in MongoDB.</div>
+                </div>
+              </div>
+              <div class="info-step">
+                <div class="info-step-num">3</div>
+                <div class="info-step-content">
+                  <div class="info-step-title">Save → MongoDB</div>
+                  <div class="info-step-desc">Employee record (with encrypted salary) is saved to the database.</div>
+                </div>
+              </div>
+              <div class="info-step" style="border-bottom: none;">
+                <div class="info-step-num">4</div>
+                <div class="info-step-content">
+                  <div class="info-step-title">Email → SMTP</div>
+                  <div class="info-step-desc">Welcome email sent via Nodemailer using SMTP creds from Secrets Manager.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /page-content -->
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

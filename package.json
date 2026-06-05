@@ -1,0 +1,44 @@
+{
+  "name": "employee-management-system",
+  "version": "1.0.0",
+  "description": "Employee Management System with AWS Secrets Manager, KMS, S3, JWT Authentication, and Nodemailer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "aws",
+    "secrets-manager",
+    "kms",
+    "s3",
+    "jwt",
+    "nodejs",
+    "express",
+    "mongodb",
+    "employee-management"
+  ],
+  "author": "AWS Cloud Engineering Project",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-kms": "^3.620.0",
+    "@aws-sdk/client-s3": "^3.620.0",
+    "@aws-sdk/client-secrets-manager": "^3.620.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.4.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.13",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
